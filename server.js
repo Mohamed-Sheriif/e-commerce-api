@@ -4,6 +4,7 @@ const dotnev = require("dotenv");
 
 // Routes
 const dbConnection = require("./config/database");
+const CategoryRoute = require("./routes/categoryRoute");
 
 dotnev.config({ path: "config.env" });
 const PORT = process.env.PORT || 3000;
@@ -20,7 +21,7 @@ if (process.env.NODE_ENV === "development") {
 app.use(express.json());
 
 // Mounted Routed
-app.use("/api/v1/categories");
+app.use("/api/v1/categories", CategoryRoute);
 
 app.listen(PORT, () => {
   console.log(`Server is running on PORT ${PORT}`);
