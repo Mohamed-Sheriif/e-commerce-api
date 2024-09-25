@@ -7,6 +7,7 @@ const ApiError = require("./utils/apiError");
 const globalError = require("./middlewares/errorMiddleware");
 const dbConnection = require("./config/database");
 const CategoryRoute = require("./routes/categoryRoute");
+const SubCategoryRoute = require("./routes/subCategoryRoute");
 
 dotnev.config({ path: "config.env" });
 const app = express();
@@ -23,6 +24,7 @@ app.use(express.json());
 
 // Mounted Routed
 app.use("/api/v1/categories", CategoryRoute);
+app.use("/api/v1/subcategories", SubCategoryRoute);
 
 app.use("*", (req, res, next) => {
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));

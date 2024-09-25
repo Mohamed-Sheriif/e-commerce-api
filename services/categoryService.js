@@ -8,7 +8,7 @@ const Category = require("../models/categoryModel");
 // @Route   POST /api/v1/categories
 // @access  Private
 exports.createCategory = asyncHandler(async (req, res) => {
-  const name = req.body.name;
+  const { name } = req.body;
 
   const category = await Category.create({ name, slug: slugify(name) });
 
@@ -48,7 +48,7 @@ exports.getCategory = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.updateCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const name = req.body.name;
+  const { name } = req.body;
 
   const category = await Category.findByIdAndUpdate(
     { _id: id },
