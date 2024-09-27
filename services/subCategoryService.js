@@ -78,16 +78,6 @@ exports.updateSubCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const { name, category } = req.body;
 
-  // Check if category exist
-  if (category) {
-    const categoryExist = await Category.findById(category);
-    if (!categoryExist) {
-      return next(
-        new ApiError(`No category found with the id ${category}`, 404)
-      );
-    }
-  }
-
   const subCategory = await SubCategory.findByIdAndUpdate(
     { _id: id },
     { name, slug: slugify(name), category },
