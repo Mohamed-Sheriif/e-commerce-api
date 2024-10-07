@@ -62,6 +62,7 @@ exports.createProductValidator = [
     .withMessage("Product must belong to a category!")
     .isMongoId()
     .withMessage("Invalid category id format!")
+    // Validate if the category exists
     .custom(async (categoryId) => {
       const category = await Category.findById(categoryId);
       if (!category) {
@@ -72,6 +73,7 @@ exports.createProductValidator = [
     .optional()
     .isMongoId()
     .withMessage("Invalid sub category id format!")
+    // Validate if the sub categories exists
     .custom(async (subCategoriesIds) => {
       const result = await SubCategory.find({
         _id: { $exists: true, $in: subCategoriesIds },
@@ -79,6 +81,24 @@ exports.createProductValidator = [
 
       if (result.length !== subCategoriesIds.length) {
         throw new Error("Invalid subCategories Ids, some ids does not exist!");
+      }
+    })
+    .custom(async (subCategoriesIds, { req }) => {
+      const subCategories = await SubCategory.find({
+        category: req.body.category,
+      }).select("_id");
+
+      const subCategoriesIdsInDb = subCategories.map((subCategory) =>
+        subCategory._id.toString()
+      );
+
+      // Check if all subCategories belong to the category
+      const result = subCategoriesIds.every((id) =>
+        subCategoriesIdsInDb.includes(id)
+      );
+
+      if (!result) {
+        throw new Error("SubCategories not belong to category!");
       }
     }),
   check("brand").optional().isMongoId().withMessage("Invalid brand id format!"),
