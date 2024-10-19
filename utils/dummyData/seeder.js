@@ -17,7 +17,7 @@ const insertData = async () => {
   try {
     await Product.create(products);
 
-    console.log("Data Inserted".green.inverse);
+    console.log("Data Inserted");
     process.exit();
   } catch (error) {
     console.log(error);
@@ -28,7 +28,7 @@ const insertData = async () => {
 const destroyData = async () => {
   try {
     await Product.deleteMany();
-    console.log("Data Destroyed".red.inverse);
+    console.log("Data Destroyed");
     process.exit();
   } catch (error) {
     console.log(error);

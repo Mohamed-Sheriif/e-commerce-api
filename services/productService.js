@@ -19,14 +19,31 @@ exports.createProduct = asyncHandler(async (req, res) => {
 // @Route   GET /api/v1/products
 // @access  Public
 exports.getAllProducts = asyncHandler(async (req, res) => {
+  // 1) Filtering
+  const queryStringObj = { ...req.query };
+  const excludeFields = ["page", "limit", "sort", "fields"];
+  excludeFields.forEach((field) => delete queryStringObj[field]);
+
+  // Apply filteration using [gte, gt, lte, lt]
+  let queryStr = JSON.stringify(queryStringObj);
+  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+  // 2) Pagination
   const page = req.query.page * 1 || 1;
   const limit = req.query.limit * 1 || 5;
   const skip = (page - 1) * limit;
 
-  const products = await Product.find({}).skip(skip).limit(limit).populate({
-    path: "category",
-    select: "name -_id",
-  });
+  // Build query
+  const mongooseQuery = Product.find(JSON.parse(queryStr))
+    .skip(skip)
+    .limit(limit)
+    .populate({
+      path: "category",
+      select: "name -_id",
+    });
+
+  // Execute query
+  const products = await mongooseQuery;
 
   res.status(200).json({ result: products.length, page, data: products });
 });
