@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 
 const ApiError = require("../utils/apiError");
 const Brand = require("../models/brandModel");
+const ApiFeature = require("../utils/apiFeatures");
 
 // @desc    Create New Brand
 // @Route   POST /api/v1/brands
@@ -19,13 +20,22 @@ exports.createBrand = asyncHandler(async (req, res) => {
 // @Route   GET /api/v1/brands
 // @access  Public
 exports.getAllBrands = asyncHandler(async (req, res) => {
-  const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 5;
-  const skip = (page - 1) * limit;
+  // Build query
+  const documentsCount = await Brand.countDocuments();
+  const apiFeature = new ApiFeature(Brand.find(), req.query)
+    .paginate(documentsCount)
+    .filter()
+    .limitFields()
+    .search()
+    .sort();
 
-  const brands = await Brand.find({}).skip(skip).limit(limit);
+  // Execute query
+  const { mongooseQuery, paginationResult } = apiFeature;
+  const brands = await mongooseQuery;
 
-  res.status(200).json({ result: brands.length, page, data: brands });
+  res
+    .status(200)
+    .json({ result: brands.length, paginationResult, data: brands });
 });
 
 // @desc    Get Specific Brand

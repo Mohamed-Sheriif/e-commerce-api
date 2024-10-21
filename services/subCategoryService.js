@@ -3,7 +3,7 @@ const asyncHandler = require("express-async-handler");
 
 const ApiError = require("../utils/apiError");
 const SubCategory = require("../models/subCategoryModel");
-const Category = require("../models/categoryModel");
+const ApiFeature = require("../utils/apiFeatures");
 
 // Nested Route
 // @desc    Create New SubCategory For Category
@@ -42,18 +42,24 @@ exports.createFilterObj = (req, res, next) => {
 // @Route   GET /api/v1/subcategories
 // @access  Public
 exports.getAllSubCategories = asyncHandler(async (req, res) => {
-  const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 5;
-  const skip = (page - 1) * limit;
+  // Build query
+  const documentsCount = await SubCategory.countDocuments();
+  const apiFeature = new ApiFeature(SubCategory.find(), req.query)
+    .paginate(documentsCount)
+    .filter(req.filterObject)
+    .limitFields()
+    .search()
+    .sort();
 
-  const subCategories = await SubCategory.find(req.filterObject)
-    .skip(skip)
-    .limit(limit);
-  // .populate({ path: "category", select: "name -_id" });
+  // Execute query
+  const { mongooseQuery, paginationResult } = apiFeature;
+  const subCategories = await mongooseQuery;
 
-  res
-    .status(200)
-    .json({ result: subCategories.length, page, data: subCategories });
+  res.status(200).json({
+    result: subCategories.length,
+    paginationResult,
+    data: subCategories,
+  });
 });
 
 // @desc    Get Specific SubCategory
