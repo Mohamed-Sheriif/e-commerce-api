@@ -4,6 +4,7 @@ const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiError");
 const Product = require("../models/productModel");
 const ApiFeature = require("../utils/apiFeatures");
+const factory = require("./handlersFactory");
 
 // @desc    Create New Product
 // @Route   POST /api/v1/products
@@ -78,15 +79,4 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
 // @desc    Delete Product
 // @Route   DELETE /api/v1/product/:id
 // @access  Private
-exports.deleteProduct = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-
-  const product = await Product.findByIdAndDelete({ _id: id });
-
-  // Check if product exist
-  if (!product) {
-    return next(new ApiError(`No product found with the id ${id}`, 404));
-  }
-
-  res.status(204).send();
-});
+exports.deleteProduct = factory.deleteOne(Product);

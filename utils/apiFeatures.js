@@ -46,10 +46,14 @@ class ApiFeatures {
 
     const queryRes = JSON.parse(queryStr);
 
-    this.mongooseQuery = this.mongooseQuery.find({
-      ...queryRes,
-      category: categoryObj.category,
-    });
+    if (categoryObj) {
+      this.mongooseQuery = this.mongooseQuery.find({
+        ...queryRes,
+        category: categoryObj.category,
+      });
+    } else {
+      this.mongooseQuery = this.mongooseQuery.find(queryRes);
+    }
 
     return this;
   }

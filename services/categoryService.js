@@ -4,6 +4,7 @@ const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiError");
 const Category = require("../models/categoryModel");
 const ApiFeature = require("../utils/apiFeatures");
+const factory = require("./handlersFactory");
 
 // @desc    Create New Category
 // @Route   POST /api/v1/categories
@@ -77,15 +78,4 @@ exports.updateCategory = asyncHandler(async (req, res, next) => {
 // @desc    Delete Category
 // @Route   DELETE /api/v1/categories/:id
 // @access  Private
-exports.deleteCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-
-  const category = await Category.findByIdAndDelete({ _id: id });
-
-  // Check if category exist
-  if (!category) {
-    return next(new ApiError(`No category found with the id ${id}`, 404));
-  }
-
-  res.status(204).send();
-});
+exports.deleteCategory = factory.deleteOne(Category);
