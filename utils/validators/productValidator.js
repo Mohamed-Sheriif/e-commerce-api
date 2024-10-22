@@ -1,3 +1,4 @@
+const slugify = require("slugify");
 const { check } = require("express-validator");
 
 const validatorMiddleware = require("../../middlewares/validatorMiddleware");
@@ -132,6 +133,13 @@ exports.updateProductValidator = [
     .withMessage("Product id required!")
     .isMongoId()
     .withMessage("Invalid product id format!"),
+  check("title")
+    .optional()
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+
+      return true;
+    }),
   validatorMiddleware,
 ];
 

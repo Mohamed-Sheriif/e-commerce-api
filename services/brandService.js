@@ -57,23 +57,7 @@ exports.getBrand = asyncHandler(async (req, res, next) => {
 // @desc    Update Brand
 // @Route   PUT /api/v1/brands/:id
 // @access  Private
-exports.updateBrand = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const { name } = req.body;
-
-  const brand = await Brand.findByIdAndUpdate(
-    { _id: id },
-    { name, slug: slugify(name) },
-    { new: true }
-  );
-
-  // Check if brand exist
-  if (!brand) {
-    return next(new ApiError(`No brand found with the id ${id}`, 404));
-  }
-
-  res.status(200).json({ data: brand });
-});
+exports.updateBrand = factory.updateOne(Brand);
 
 // @desc    Delete Brand
 // @Route   DELETE /api/v1/brands/:id

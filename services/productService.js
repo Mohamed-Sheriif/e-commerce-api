@@ -60,21 +60,7 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
 // @desc    Update Product
 // @Route   PUT /api/v1/products/:id
 // @access  Private
-exports.updateProduct = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  if (req.body.title) req.body.slug = slugify(req.body.title);
-
-  const product = await Product.findByIdAndUpdate({ _id: id }, req.body, {
-    new: true,
-  });
-
-  // Check if product exist
-  if (!product) {
-    return next(new ApiError(`No product found with the id ${id}`, 404));
-  }
-
-  res.status(200).json({ data: product });
-});
+exports.updateProduct = factory.updateOne(Product);
 
 // @desc    Delete Product
 // @Route   DELETE /api/v1/product/:id
