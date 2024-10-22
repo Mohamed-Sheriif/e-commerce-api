@@ -9,13 +9,7 @@ const factory = require("./handlersFactory");
 // @desc    Create New Category
 // @Route   POST /api/v1/categories
 // @access  Private
-exports.createCategory = asyncHandler(async (req, res) => {
-  const { name } = req.body;
-
-  const category = await Category.create({ name, slug: slugify(name) });
-
-  res.status(201).json({ data: category });
-});
+exports.createCategory = factory.createOne(Category);
 
 // @desc    Get All Categories
 // @Route   GET /api/v1/categories
@@ -42,17 +36,7 @@ exports.getAllCategories = asyncHandler(async (req, res) => {
 // @desc    Get Specific Category
 // @Route   GET /api/v1/categories/:id
 // @access  Public
-exports.getCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const category = await Category.findById(id);
-
-  // Check if category exist
-  if (!category) {
-    return next(new ApiError(`No category found with the id ${id}`, 404));
-  }
-
-  res.status(200).json({ data: category });
-});
+exports.getCategory = factory.getOne(Category);
 
 // @desc    Update Category
 // @Route   PUT /api/v1/categories/:id

@@ -18,17 +18,7 @@ exports.setCategoryIdToBody = (req, res, next) => {
 // @desc    Create New SubCategory
 // @Route   POST /api/v1/subcategories
 // @access  Private
-exports.createSubCategory = asyncHandler(async (req, res) => {
-  const { name, category } = req.body;
-
-  const subCategory = await SubCategory.create({
-    name,
-    slug: slugify(name),
-    category,
-  });
-
-  res.status(201).json({ data: subCategory });
-});
+exports.createSubCategory = factory.createOne(SubCategory);
 
 // Nested Route
 // @desc    Get All SubCategories For Category
@@ -66,17 +56,7 @@ exports.getAllSubCategories = asyncHandler(async (req, res) => {
 // @desc    Get Specific SubCategory
 // @Route   GET /api/v1/subcategories/:id
 // @access  Public
-exports.getSubCategory = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const subCategory = await SubCategory.findById(id);
-
-  // Check if subCategory exist
-  if (!subCategory) {
-    return next(new ApiError(`No subCategory found with the id ${id}`, 404));
-  }
-
-  res.status(200).json({ data: subCategory });
-});
+exports.getSubCategory = factory.getOne(SubCategory);
 
 // @desc    Update SubCategory
 // @Route   PUT /api/v1/subcategories/:id

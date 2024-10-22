@@ -9,13 +9,7 @@ const factory = require("./handlersFactory");
 // @desc    Create New Brand
 // @Route   POST /api/v1/brands
 // @access  Private
-exports.createBrand = asyncHandler(async (req, res) => {
-  const { name } = req.body;
-
-  const brand = await Brand.create({ name, slug: slugify(name) });
-
-  res.status(201).json({ data: brand });
-});
+exports.createBrand = factory.createOne(Brand);
 
 // @desc    Get All Brands
 // @Route   GET /api/v1/brands
@@ -42,17 +36,7 @@ exports.getAllBrands = asyncHandler(async (req, res) => {
 // @desc    Get Specific Brand
 // @Route   GET /api/v1/brands/:id
 // @access  Public
-exports.getBrand = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const brand = await Brand.findById(id);
-
-  // Check if brands exist
-  if (!brand) {
-    return next(new ApiError(`No brand found with the id ${id}`, 404));
-  }
-
-  res.status(200).json({ data: brand });
-});
+exports.getBrand = factory.getOne(Brand);
 
 // @desc    Update Brand
 // @Route   PUT /api/v1/brands/:id
