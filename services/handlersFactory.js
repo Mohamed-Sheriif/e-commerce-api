@@ -9,6 +9,26 @@ exports.createOne = (Model) =>
     res.status(201).json({ data: document });
   });
 
+exports.getAll = (Model, modelName = "") =>
+  asyncHandler(async (req, res) => {
+    // Build query
+    const documentsCount = await Model.countDocuments();
+    const apiFeature = new ApiFeature(Model.find(req.filterObject), req.query)
+      .paginate(documentsCount)
+      .filter()
+      .limitFields()
+      .search(modelName)
+      .sort();
+
+    // Execute query
+    const { mongooseQuery, paginationResult } = apiFeature;
+    const documents = await mongooseQuery;
+
+    res
+      .status(200)
+      .json({ result: documents.length, paginationResult, data: documents });
+  });
+
 exports.getOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     const { id } = req.params;

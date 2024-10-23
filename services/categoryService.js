@@ -1,9 +1,4 @@
-const slugify = require("slugify");
-const asyncHandler = require("express-async-handler");
-
-const ApiError = require("../utils/apiError");
 const Category = require("../models/categoryModel");
-const ApiFeature = require("../utils/apiFeatures");
 const factory = require("./handlersFactory");
 
 // @desc    Create New Category
@@ -14,24 +9,7 @@ exports.createCategory = factory.createOne(Category);
 // @desc    Get All Categories
 // @Route   GET /api/v1/categories
 // @access  Public
-exports.getAllCategories = asyncHandler(async (req, res) => {
-  // Build query
-  const documentsCount = await Category.countDocuments();
-  const apiFeature = new ApiFeature(Category.find(), req.query)
-    .paginate(documentsCount)
-    .filter()
-    .limitFields()
-    .search()
-    .sort();
-
-  // Execute query
-  const { mongooseQuery, paginationResult } = apiFeature;
-  const categories = await mongooseQuery;
-
-  res
-    .status(200)
-    .json({ result: categories.length, paginationResult, data: categories });
-});
+exports.getAllCategories = factory.getAll(Category);
 
 // @desc    Get Specific Category
 // @Route   GET /api/v1/categories/:id

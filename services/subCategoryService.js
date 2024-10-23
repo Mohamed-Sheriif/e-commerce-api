@@ -32,26 +32,7 @@ exports.createFilterObj = (req, res, next) => {
 // @desc    Get All SubCategories
 // @Route   GET /api/v1/subcategories
 // @access  Public
-exports.getAllSubCategories = asyncHandler(async (req, res) => {
-  // Build query
-  const documentsCount = await SubCategory.countDocuments();
-  const apiFeature = new ApiFeature(SubCategory.find(), req.query)
-    .paginate(documentsCount)
-    .filter(req.filterObject)
-    .limitFields()
-    .search()
-    .sort();
-
-  // Execute query
-  const { mongooseQuery, paginationResult } = apiFeature;
-  const subCategories = await mongooseQuery;
-
-  res.status(200).json({
-    result: subCategories.length,
-    paginationResult,
-    data: subCategories,
-  });
-});
+exports.getAllSubCategories = factory.getAll(SubCategory);
 
 // @desc    Get Specific SubCategory
 // @Route   GET /api/v1/subcategories/:id
