@@ -1,3 +1,5 @@
+const path = require("path");
+
 const express = require("express");
 const morgan = require("morgan");
 const dotnev = require("dotenv");
@@ -23,6 +25,7 @@ if (process.env.NODE_ENV === "development") {
   console.log(`Mode: ${process.env.NODE_ENV}`);
 }
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "uploads")));
 
 // Mounted Routed
 app.use("/api/v1/categories", CategoryRoute);
