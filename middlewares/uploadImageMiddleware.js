@@ -1,18 +1,7 @@
 const multer = require("multer");
 const ApiError = require("../utils/apiError");
 
-exports.uploadSingleImage = (imageName) => {
-  // 1) Disck Storage Engine
-  // const multerStorage = multer.diskStorage({
-  //   destination: function (req, file, cb) {
-  //     cb(null, "uploads/categories");
-  //   },
-  //   filename: function (req, file, cb) {
-  //     const ext = file.mimetype.split("/")[1];
-  //     cb(null, `category-${uuidv4()}-${Date.now()}.${ext}`);
-  //   },
-  // });
-
+const multerOptions = () => {
   // 2) Memory Storage Engine
   const multerStorage = multer.memoryStorage();
 
@@ -27,5 +16,10 @@ exports.uploadSingleImage = (imageName) => {
 
   const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
-  return upload.single(imageName);
+  return upload;
 };
+
+exports.uploadSingleImage = (imageName) => multerOptions().single(imageName);
+
+exports.uploadMultibleImages = (arrayOfields) =>
+  multerOptions().fields(arrayOfields);

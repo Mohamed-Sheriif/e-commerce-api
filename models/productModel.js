@@ -79,4 +79,25 @@ productSchema.pre(/^find/, function (next) {
   next();
 });
 
+const setImageUrl = (doc) => {
+  if (doc.coverImage) {
+    doc.coverImage = `${process.env.BASE_URL}/products/${doc.coverImage}`;
+  }
+  if (doc.images) {
+    doc.images = doc.images.map(
+      (image) => `${process.env.BASE_URL}/products/${image}`
+    );
+  }
+};
+
+// Works with findAll , findOne and update
+productSchema.post("init", (doc) => {
+  setImageUrl(doc);
+});
+
+// Works with create
+productSchema.post("save", (doc) => {
+  setImageUrl(doc);
+});
+
 module.exports = mongoose.model("Product", productSchema);
