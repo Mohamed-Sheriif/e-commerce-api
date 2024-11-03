@@ -36,7 +36,6 @@ exports.updateBrandValidator = [
     .withMessage("Invalid brand id format!"),
   check("name")
     .optional()
-    .withMessage("Brand name required!")
     .isLength({ min: 3 })
     .withMessage("Too short brand name!")
     .isLength({ max: 32 })
