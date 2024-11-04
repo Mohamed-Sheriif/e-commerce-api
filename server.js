@@ -12,6 +12,7 @@ const CategoryRoute = require("./routes/categoryRoute");
 const SubCategoryRoute = require("./routes/subCategoryRoute");
 const BrandRoute = require("./routes/brandRoute");
 const ProductRoute = require("./routes/productRoute");
+const UserRoute = require("./routes/userRoute");
 
 dotnev.config({ path: "config.env" });
 const app = express();
@@ -32,6 +33,7 @@ app.use("/api/v1/categories", CategoryRoute);
 app.use("/api/v1/subcategories", SubCategoryRoute);
 app.use("/api/v1/brands", BrandRoute);
 app.use("/api/v1/products", ProductRoute);
+app.use("/api/v1/users", UserRoute);
 
 app.use("*", (req, res, next) => {
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
