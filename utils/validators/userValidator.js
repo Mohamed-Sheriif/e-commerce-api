@@ -73,6 +73,21 @@ exports.updateUserValidator = [
 
       return true;
     }),
+  check("email")
+    .optional()
+    .isEmail()
+    .withMessage("Invalid User email format!")
+    .custom(async (val, { req }) => {
+      const user = await User.findOne({ email: val });
+
+      if (user) {
+        throw new Error("User email already exists!");
+      }
+    }),
+  check("phone")
+    .optional()
+    .isMobilePhone(["ar-EG", "ar-SA"])
+    .withMessage("Invalid User phone format!"),
   validatorMiddleware,
 ];
 
