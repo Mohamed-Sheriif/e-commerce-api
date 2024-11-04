@@ -1,3 +1,4 @@
+const bcrypt = require("bcryptjs");
 const slugify = require("slugify");
 const { check } = require("express-validator");
 
@@ -31,7 +32,16 @@ exports.createUserValidator = [
     .notEmpty()
     .withMessage("User password required!")
     .isLength({ min: 6 })
-    .withMessage("Too short User password!"),
+    .withMessage("Too short User password!")
+    .custom((password, { req }) => {
+      if (password !== req.body.passwordConfirmation) {
+        throw new Error("Password confirmation incorrect!");
+      }
+      return true;
+    }),
+  check("passwordConfirmation")
+    .notEmpty()
+    .withMessage("User password confirmation required!"),
   check("phone")
     .optional()
     .isMobilePhone(["ar-EG", "ar-SA"])
@@ -63,6 +73,46 @@ exports.updateUserValidator = [
 
       return true;
     }),
+  validatorMiddleware,
+];
+
+exports.changeUserPasswordValidator = [
+  check("id")
+    .notEmpty()
+    .withMessage("User id required!")
+    .isMongoId()
+    .withMessage("Invalid user id format!"),
+  check("curruntPassword")
+    .notEmpty()
+    .withMessage("User current password required!"),
+  check("password")
+    .notEmpty()
+    .withMessage("User new password is required!")
+    .isLength({ min: 6 })
+    .withMessage("Too short User password!")
+    .custom(async (password, { req }) => {
+      // 1) Confirm old password
+      const user = await User.findById(req.params.id);
+      if (!user) {
+        throw new Error("User not found!");
+      }
+      const isCorrectPassword = await bcrypt.compare(
+        req.body.curruntPassword,
+        user.password
+      );
+      if (!isCorrectPassword) {
+        throw new Error("Current password is incorrect!");
+      }
+
+      // 2) Confirm new password
+      if (password !== req.body.passwordConfirm) {
+        throw new Error("Password confirmation incorrect!");
+      }
+      return true;
+    }),
+  check("passwordConfirm")
+    .notEmpty()
+    .withMessage("User password confirmation required!"),
   validatorMiddleware,
 ];
 

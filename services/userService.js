@@ -1,9 +1,11 @@
 const sharp = require("sharp");
 const { v4: uuidv4 } = require("uuid");
 const asyncHandler = require("express-async-handler");
+const bcrypt = require("bcryptjs");
 
 const User = require("../models/userModel");
 const factory = require("./handlersFactory");
+const ApiError = require("../utils/apiError");
 const { uploadSingleImage } = require("../middlewares/uploadImageMiddleware");
 
 // Upload Single Image
@@ -44,7 +46,56 @@ exports.getUser = factory.getOne(User);
 // @desc    Update User
 // @Route   PUT /api/v1/users/:id
 // @access  Private
-exports.updateUser = factory.updateOne(User);
+exports.updateUser = asyncHandler(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    {
+      name: req.body.name,
+      email: req.body.email,
+      role: req.body.role,
+      profileImg: req.body.profileImg,
+      phone: req.body.phone,
+    },
+    {
+      new: true,
+    }
+  );
+
+  // Check if user exist
+  if (!user) {
+    return next(
+      new ApiError(`No user found with the id ${req.params.id}`, 404)
+    );
+  }
+
+  res.status(200).json({ data: user });
+});
+
+// @desc    Change User Password
+// @Route   PUT /api/v1/users/changePassword/:id
+// @access  Private
+exports.changeUserPassword = asyncHandler(async (req, res, next) => {
+  const hashedPassword = await bcrypt.hash(req.body.password, 12);
+
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    {
+      password: hashedPassword,
+    },
+    {
+      new: true,
+    }
+  );
+
+  // Check if user exist
+  if (!user) {
+    return next(
+      new ApiError(`No user found with the id ${req.params.id}`, 404)
+    );
+  }
+
+  res.status(200).json({ data: user });
+});
 
 // @desc    Delete User
 // @Route   DELETE /api/v1/users/:id
