@@ -23,7 +23,6 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, "Password required!"],
-      minLength: [6, "Password must be at least 6 characters long!"],
     },
     role: {
       type: String,
@@ -41,7 +40,7 @@ const userSchema = new mongoose.Schema(
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   // Hasing user password
-  this.password = await bcrypt.hash(this.password, 12);
+  this.password = await bcrypt.hash(this.password, 10);
 
   next();
 });

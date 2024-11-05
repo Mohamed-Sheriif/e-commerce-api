@@ -44,3 +44,13 @@ exports.signupValidator = [
     .withMessage("User password confirmation required!"),
   validatorMiddleware,
 ];
+
+exports.loginValidator = [
+  check("email")
+    .notEmpty()
+    .withMessage("User email required!")
+    .isEmail()
+    .withMessage("Invalid User email format!"),
+  check("password").notEmpty().withMessage("User password required!"),
+  validatorMiddleware,
+];
