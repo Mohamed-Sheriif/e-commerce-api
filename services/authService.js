@@ -35,7 +35,7 @@ exports.signup = asyncHandler(async (req, res, next) => {
 exports.login = asyncHandler(async (req, res, next) => {
   // 1) Check if user exists && password is correct
   const user = await User.findOne({ email: req.body.email });
-  if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
+  if (!user || (await bcrypt.compare(req.body.password, user.password))) {
     return next(new ApiError("Incorrect email or password", 401));
   }
 
@@ -44,3 +44,68 @@ exports.login = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ data: user, token });
 });
+
+// @desc    Make sure user is logged in
+exports.protect = asyncHandler(async (req, res, next) => {
+  // 1) Getting token and check if it's there
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+    console.log(token);
+  }
+  if (!token) {
+    return next(
+      new ApiError("You are not logged in! Please log in to get access.", 401)
+    );
+  }
+  console.log(token);
+  // 2) Verification token
+  const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+  // 3) Check if user still exists
+  const user = await User.findById(decode.userId);
+  if (!user) {
+    return next(
+      new ApiError(
+        "The user belonging to this token does no longer exist.",
+        401
+      )
+    );
+  }
+
+  // 4) Check if user changed password after the token was created
+  if (user.passwordChangedAt) {
+    const passChangedTimestamp = parseInt(
+      user.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    if (decode.iat < passChangedTimestamp) {
+      return next(
+        new ApiError(
+          "User recently changed password! Please log in again.",
+          401
+        )
+      );
+    }
+  }
+
+  req.user = user;
+
+  next();
+});
+
+// @desc    Check user role
+exports.allowedTo = (...roles) =>
+  asyncHandler((req, res, next) => {
+    // 1) access roles
+    // 2) access registered user role
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new ApiError("You are not allowed to access this route", 403)
+      );
+    }
+    next();
+  });

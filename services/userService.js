@@ -30,22 +30,22 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
 
 // @desc    Create New User
 // @Route   POST /api/v1/users
-// @access  Private
+// @access  Private/Admin
 exports.createUser = factory.createOne(User);
 
 // @desc    Get All Users
 // @Route   GET /api/v1/users
-// @access  Private
+// @access  Private/Admin-Manager
 exports.getAllUsers = factory.getAll(User);
 
 // @desc    Get Specific User
 // @Route   GET /api/v1/ssers/:id
-// @access  Private
+// @access  Private/Admin-Manager
 exports.getUser = factory.getOne(User);
 
 // @desc    Update User
 // @Route   PUT /api/v1/users/:id
-// @access  Private
+// @access  Private/Admin
 exports.updateUser = asyncHandler(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
     req.params.id,
@@ -73,7 +73,7 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 
 // @desc    Change User Password
 // @Route   PUT /api/v1/users/changePassword/:id
-// @access  Private
+// @access  Private/Admin
 exports.changeUserPassword = asyncHandler(async (req, res, next) => {
   const hashedPassword = await bcrypt.hash(req.body.password, 12);
 
@@ -81,6 +81,7 @@ exports.changeUserPassword = asyncHandler(async (req, res, next) => {
     req.params.id,
     {
       password: hashedPassword,
+      passwordChangedAt: Date.now(),
     },
     {
       new: true,
@@ -99,5 +100,5 @@ exports.changeUserPassword = asyncHandler(async (req, res, next) => {
 
 // @desc    Delete User
 // @Route   DELETE /api/v1/users/:id
-// @access  Private
+// @access  Private/Admin
 exports.deleteUser = factory.deleteOne(User);

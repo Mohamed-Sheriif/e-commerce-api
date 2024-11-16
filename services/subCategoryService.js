@@ -17,7 +17,7 @@ exports.setCategoryIdToBody = (req, res, next) => {
 
 // @desc    Create New SubCategory
 // @Route   POST /api/v1/subcategories
-// @access  Private
+// @access  Private/Admin-Manager
 exports.createSubCategory = factory.createOne(SubCategory);
 
 // Nested Route
@@ -41,10 +41,10 @@ exports.getSubCategory = factory.getOne(SubCategory);
 
 // @desc    Update SubCategory
 // @Route   PUT /api/v1/subcategories/:id
-// @access  Private
+// @access  Private/Admin-Manager
 exports.updateSubCategory = factory.updateOne(SubCategory);
 
 // @desc    Delete SubCategory
 // @Route   DELETE /api/v1/subcategories/:id
-// @access  Private
+// @access  Private/Admin
 exports.deleteSubCategory = factory.deleteOne(SubCategory);
