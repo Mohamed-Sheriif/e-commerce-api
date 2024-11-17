@@ -4,6 +4,7 @@ const {
   createUser,
   getAllUsers,
   getUser,
+  getLogggedInUser,
   updateUser,
   changeUserPassword,
   deleteUser,
@@ -21,6 +22,8 @@ const {
 const AuthService = require("../services/authService");
 
 const router = express.Router();
+
+router.get("/getMe", AuthService.protect, getLogggedInUser, getUser);
 
 router.put(
   "/changePassword/:id",

@@ -39,7 +39,7 @@ exports.createUser = factory.createOne(User);
 exports.getAllUsers = factory.getAll(User);
 
 // @desc    Get Specific User
-// @Route   GET /api/v1/ssers/:id
+// @Route   GET /api/v1/users/:id
 // @access  Private/Admin-Manager
 exports.getUser = factory.getOne(User);
 
@@ -102,3 +102,11 @@ exports.changeUserPassword = asyncHandler(async (req, res, next) => {
 // @Route   DELETE /api/v1/users/:id
 // @access  Private/Admin
 exports.deleteUser = factory.deleteOne(User);
+
+// @desc    Get Me
+// @Route   GET /api/v1/users/getMe
+// @access  Private/protect
+exports.getLogggedInUser = asyncHandler(async (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+});
