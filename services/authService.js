@@ -63,7 +63,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
       new ApiError("You are not logged in! Please log in to get access.", 401)
     );
   }
-  console.log(token);
+
   // 2) Verification token
   const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
